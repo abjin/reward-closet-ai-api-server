@@ -20,8 +20,8 @@ labels = [
   'blouse',
   'tshirts',
   'skirt',
-  '뜯어짐',
-  '외부오염',
-  '찢어짐',
-  '해짐',
+  'ripped',
+  'pollution',
+  'tearing',
+  'frayed',
 ]
