@@ -7,7 +7,8 @@
 - **의류 분류**: 이미지 URL을 통한 의류 타입 분류
 - **결함 검출**: 의류의 찢어짐, 오염, 마모 등 결함 감지
 - **높은 성능**: TorchScript 최적화된 모델로 빠른 추론
-- **도커 배포**: 컨테이너 기반 배포 및 Nginx 프록시 설정
+- **다양한 배포 방식**: Docker 로컬, AWS Elastic Beanstalk, Docker Compose + Nginx
+- **확장성**: AWS 클라우드 기반 자동 스케일링 지원
 
 ## 📋 분류 카테고리
 
@@ -67,7 +68,7 @@ pip install -r requirements.txt
 uvicorn src.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Docker 배포
+### Docker 로컬 배포
 
 1. **Docker 이미지 빌드**
 ```bash
@@ -84,11 +85,106 @@ docker run -p 8000:8000 reward-closet-ai-api-server
 docker-compose up -d
 ```
 
+### AWS Elastic Beanstalk 배포
+
+#### 사전 준비
+- AWS CLI 설치 및 구성
+- Elastic Beanstalk CLI (EB CLI) 설치
+- Docker Hub 계정 (이미지 푸시용)
+
+#### 배포 과정
+
+1. **Docker 이미지 빌드 및 푸시**
+```bash
+# 이미지 빌드
+docker build -t abjin/reward-closet-ai-api-server:latest .
+
+# Docker Hub에 푸시
+docker push abjin/reward-closet-ai-api-server:latest
+```
+
+2. **Elastic Beanstalk 환경 초기화**
+```bash
+# EB 초기화
+eb init
+
+# 애플리케이션 이름: reward-closet-ai-api-server
+# 플랫폼: Docker
+# 리전: 원하는 AWS 리전 선택
+```
+
+3. **환경 생성 및 배포**
+```bash
+# 환경 생성
+eb create production
+
+# 배포
+eb deploy
+```
+
+4. **환경 상태 확인**
+```bash
+# 상태 확인
+eb status
+
+# 로그 확인
+eb logs
+
+# 애플리케이션 열기
+eb open
+```
+
+#### Dockerrun.aws.json 설정
+프로젝트에 포함된 `Dockerrun.aws.json` 파일은 Elastic Beanstalk에서 Docker 컨테이너를 실행하기 위한 설정을 정의합니다:
+
+- **이미지**: `abjin/reward-closet-ai-api-server:latest` (Docker Hub에서 가져옴)
+- **포트**: 8000 (FastAPI 애플리케이션 포트)
+- **자동 업데이트**: 새로운 이미지 버전 자동 적용
+
+이 파일이 프로젝트 루트에 있으면 Elastic Beanstalk가 자동으로 인식하여 배포에 사용합니다.
+
+#### 환경 변수 설정
+Elastic Beanstalk 콘솔에서 다음 환경 변수들을 설정할 수 있습니다:
+- `PORT`: 8000 (기본값)
+- `PYTHONPATH`: /app
+- 기타 필요한 환경 변수
+
+### 프로덕션 배포 (Docker + Nginx)
+
+Nginx 프록시와 함께 프로덕션 환경에서 배포:
+
+```bash
+# Docker Compose로 전체 스택 배포
+docker-compose up -d
+
+# 또는 자동화된 빌드 및 배포 스크립트 실행
+./start.sh
+```
+
+#### 자동화된 배포 스크립트 (start.sh)
+`start.sh` 스크립트는 다음 작업을 자동으로 수행합니다:
+
+```bash
+#!/bin/bash
+# Docker 이미지 빌드
+docker build . --tag abjin/reward-closet-ai-api-server:latest
+
+# Docker Hub에 이미지 푸시 (Elastic Beanstalk 배포용)
+docker push abjin/reward-closet-ai-api-server:latest
+```
+
+이 스크립트를 실행하면:
+1. 최신 코드로 Docker 이미지가 빌드됩니다
+2. Docker Hub에 이미지가 업로드됩니다
+3. Elastic Beanstalk에서 새로운 이미지를 자동으로 배포할 수 있습니다
+
 ## 🌐 API 사용법
 
 ### Base URL
-- 로컬: `http://localhost:8000`
-- 프로덕션: 배포된 서버 주소
+- 로컬 개발: `http://localhost:8000`
+- Docker Compose: `http://localhost` (Nginx 프록시를 통해)
+- AWS Elastic Beanstalk: `http://your-app-name.region.elasticbeanstalk.com`
+- 프로덕션: 커스텀 도메인 (설정된 경우)
 
 ### API 엔드포인트
 
@@ -140,6 +236,7 @@ reward-closet-ai-api-server/
 │   └── exception_handler.py   # 예외 처리
 ├── docker-compose.yml         # Docker Compose 설정
 ├── Dockerfile                 # Docker 이미지 빌드 설정
+├── Dockerrun.aws.json         # Elastic Beanstalk Docker 설정
 ├── nginx.conf                 # Nginx 프록시 설정
 ├── requirements.txt           # Python 의존성
 ├── start.sh                   # 배포 스크립트
@@ -194,6 +291,35 @@ pydantic==2.10.3
 3. **메모리 부족**
    - 이미지 크기가 너무 큰 경우 리사이징 필요
    - 배치 처리 시 배치 크기 조정
+
+### Elastic Beanstalk 관련 문제
+
+1. **배포 실패**
+   - Docker Hub에 이미지가 올바르게 푸시되었는지 확인
+   - `Dockerrun.aws.json` 파일의 이미지 이름 확인
+   - AWS 권한 설정 확인
+
+2. **애플리케이션 시작 실패**
+   - `eb logs`로 상세 로그 확인
+   - 환경 변수 설정 확인
+   - 포트 설정 확인 (기본값: 8000)
+
+3. **성능 문제**
+   - EC2 인스턴스 타입 확인 (CPU 집약적 작업)
+   - 로드 밸런서 설정 확인
+   - Auto Scaling 설정 검토
+
+### Docker 관련 문제
+
+1. **컨테이너 빌드 실패**
+   - Docker 이미지 크기 확인 (PyTorch로 인해 클 수 있음)
+   - 의존성 설치 과정에서 오류 확인
+   - 네트워크 연결 확인
+
+2. **컨테이너 실행 오류**
+   - 포트 충돌 확인
+   - 볼륨 마운트 권한 확인
+   - 환경 변수 설정 확인
 
 ## 📄 라이선스
 
