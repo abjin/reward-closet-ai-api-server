@@ -1,37 +1,37 @@
 # Reward Closet AI API Server
 
-의류 분류 및 결함 검출을 위한 AI 기반 API 서버입니다. PyTorch TorchScript 모델을 사용하여 의류 이미지를 15개 카테고리로 분류하고 결함을 검출합니다.
+An AI-based API server for clothing classification and defect detection. Uses PyTorch TorchScript models to classify clothing images into 15 categories and detect defects.
 
-## 🚀 주요 기능
+## 🚀 Key Features
 
-- **의류 분류**: 이미지 URL을 통한 의류 타입 분류
-- **결함 검출**: 의류의 찢어짐, 오염, 마모 등 결함 감지
-- **높은 성능**: TorchScript 최적화된 모델로 빠른 추론
-- **다양한 배포 방식**: Docker 로컬, AWS Elastic Beanstalk, Docker Compose + Nginx
-- **확장성**: AWS 클라우드 기반 자동 스케일링 지원
+- **Clothing Classification**: Classify clothing types through image URLs
+- **Defect Detection**: Detect clothing defects such as tears, stains, wear, etc.
+- **High Performance**: Fast inference with TorchScript optimized models
+- **Multiple Deployment Options**: Docker local, AWS Elastic Beanstalk, Docker Compose + Nginx
+- **Scalability**: AWS cloud-based auto-scaling support
 
-## 📋 분류 카테고리
+## 📋 Classification Categories
 
-### 의류 타입
-- jacket (재킷)
-- short pants (반바지)
-- tailored pants (정장 바지)
-- jumper (점퍼)
-- shirts (셔츠)
-- coat (코트)
-- dress (드레스)
-- casual pants (캐주얼 바지)
-- blouse (블라우스)
-- tshirts (티셔츠)
-- skirt (치마)
+### Clothing Types
+- jacket
+- short pants
+- tailored pants
+- jumper
+- shirts
+- coat
+- dress
+- casual pants
+- blouse
+- tshirts
+- skirt
 
-### 결함 타입
-- ripped (찢어짐)
-- pollution (오염)
-- tearing (해짐)
-- frayed (닳음)
+### Defect Types
+- ripped
+- pollution
+- tearing
+- frayed
 
-## 🛠 기술 스택
+## 🛠 Tech Stack
 
 - **Framework**: FastAPI
 - **AI/ML**: PyTorch, TorchScript, OpenCV
@@ -39,156 +39,156 @@
 - **Deployment**: Docker, Nginx
 - **Runtime**: Python 3.10
 
-## 📦 설치 및 실행
+## 📦 Installation and Setup
 
-### 로컬 개발 환경
+### Local Development Environment
 
-1. **저장소 클론**
+1. **Clone Repository**
 ```bash
 git clone <repository-url>
 cd reward-closet-ai-api-server
 ```
 
-2. **가상환경 설정**
+2. **Setup Virtual Environment**
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
-# 또는
+# or
 .venv\Scripts\activate  # Windows
 ```
 
-3. **의존성 설치**
+3. **Install Dependencies**
 ```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 ```
 
-4. **서버 실행**
+4. **Run Server**
 ```bash
 uvicorn src.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Docker 로컬 배포
+### Docker Local Deployment
 
-1. **Docker 이미지 빌드**
+1. **Build Docker Image**
 ```bash
 docker build -t reward-closet-ai-api-server .
 ```
 
-2. **컨테이너 실행**
+2. **Run Container**
 ```bash
 docker run -p 8000:8000 reward-closet-ai-api-server
 ```
 
-3. **Docker Compose로 전체 스택 실행**
+3. **Run Full Stack with Docker Compose**
 ```bash
 docker-compose up -d
 ```
 
-### AWS Elastic Beanstalk 배포
+### AWS Elastic Beanstalk Deployment
 
-#### 사전 준비
-- AWS CLI 설치 및 구성
-- Elastic Beanstalk CLI (EB CLI) 설치
-- Docker Hub 계정 (이미지 푸시용)
+#### Prerequisites
+- AWS CLI installed and configured
+- Elastic Beanstalk CLI (EB CLI) installed
+- Docker Hub account (for image push)
 
-#### 배포 과정
+#### Deployment Process
 
-1. **Docker 이미지 빌드 및 푸시**
+1. **Build and Push Docker Image**
 ```bash
-# 이미지 빌드
+# Build image
 docker build -t abjin/reward-closet-ai-api-server:latest .
 
-# Docker Hub에 푸시
+# Push to Docker Hub
 docker push abjin/reward-closet-ai-api-server:latest
 ```
 
-2. **Elastic Beanstalk 환경 초기화**
+2. **Initialize Elastic Beanstalk Environment**
 ```bash
-# EB 초기화
+# Initialize EB
 eb init
 
-# 애플리케이션 이름: reward-closet-ai-api-server
-# 플랫폼: Docker
-# 리전: 원하는 AWS 리전 선택
+# Application name: reward-closet-ai-api-server
+# Platform: Docker
+# Region: Select desired AWS region
 ```
 
-3. **환경 생성 및 배포**
+3. **Create Environment and Deploy**
 ```bash
-# 환경 생성
+# Create environment
 eb create production
 
-# 배포
+# Deploy
 eb deploy
 ```
 
-4. **환경 상태 확인**
+4. **Check Environment Status**
 ```bash
-# 상태 확인
+# Check status
 eb status
 
-# 로그 확인
+# Check logs
 eb logs
 
-# 애플리케이션 열기
+# Open application
 eb open
 ```
 
-#### Dockerrun.aws.json 설정
-프로젝트에 포함된 `Dockerrun.aws.json` 파일은 Elastic Beanstalk에서 Docker 컨테이너를 실행하기 위한 설정을 정의합니다:
+#### Dockerrun.aws.json Configuration
+The `Dockerrun.aws.json` file included in the project defines the configuration for running Docker containers in Elastic Beanstalk:
 
-- **이미지**: `abjin/reward-closet-ai-api-server:latest` (Docker Hub에서 가져옴)
-- **포트**: 8000 (FastAPI 애플리케이션 포트)
-- **자동 업데이트**: 새로운 이미지 버전 자동 적용
+- **Image**: `abjin/reward-closet-ai-api-server:latest` (pulled from Docker Hub)
+- **Port**: 8000 (FastAPI application port)
+- **Auto Update**: Automatic application of new image versions
 
-이 파일이 프로젝트 루트에 있으면 Elastic Beanstalk가 자동으로 인식하여 배포에 사용합니다.
+When this file is in the project root, Elastic Beanstalk automatically recognizes and uses it for deployment.
 
-#### 환경 변수 설정
-Elastic Beanstalk 콘솔에서 다음 환경 변수들을 설정할 수 있습니다:
-- `PORT`: 8000 (기본값)
+#### Environment Variables Configuration
+The following environment variables can be set in the Elastic Beanstalk console:
+- `PORT`: 8000 (default)
 - `PYTHONPATH`: /app
-- 기타 필요한 환경 변수
+- Other required environment variables
 
-### 프로덕션 배포 (Docker + Nginx)
+### Production Deployment (Docker + Nginx)
 
-Nginx 프록시와 함께 프로덕션 환경에서 배포:
+Deploy in production environment with Nginx proxy:
 
 ```bash
-# Docker Compose로 전체 스택 배포
+# Deploy full stack with Docker Compose
 docker-compose up -d
 
-# 또는 자동화된 빌드 및 배포 스크립트 실행
+# Or run automated build and deployment script
 ./start.sh
 ```
 
-#### 자동화된 배포 스크립트 (start.sh)
-`start.sh` 스크립트는 다음 작업을 자동으로 수행합니다:
+#### Automated Deployment Script (start.sh)
+The `start.sh` script automatically performs the following tasks:
 
 ```bash
 #!/bin/bash
-# Docker 이미지 빌드
+# Build Docker image
 docker build . --tag abjin/reward-closet-ai-api-server:latest
 
-# Docker Hub에 이미지 푸시 (Elastic Beanstalk 배포용)
+# Push image to Docker Hub (for Elastic Beanstalk deployment)
 docker push abjin/reward-closet-ai-api-server:latest
 ```
 
-이 스크립트를 실행하면:
-1. 최신 코드로 Docker 이미지가 빌드됩니다
-2. Docker Hub에 이미지가 업로드됩니다
-3. Elastic Beanstalk에서 새로운 이미지를 자동으로 배포할 수 있습니다
+When you run this script:
+1. Docker image is built with the latest code
+2. Image is uploaded to Docker Hub
+3. Elastic Beanstalk can automatically deploy the new image
 
-## 🌐 API 사용법
+## 🌐 API Usage
 
 ### Base URL
-- 로컬 개발: `http://localhost:8000`
-- Docker Compose: `http://localhost` (Nginx 프록시를 통해)
+- Local Development: `http://localhost:8000`
+- Docker Compose: `http://localhost` (through Nginx proxy)
 - AWS Elastic Beanstalk: `http://your-app-name.region.elasticbeanstalk.com`
-- 프로덕션: 커스텀 도메인 (설정된 경우)
+- Production: Custom domain (if configured)
 
-### API 엔드포인트
+### API Endpoints
 
-#### 의류 분류 예측
+#### Clothing Classification Prediction
 ```http
 POST /models/clothes/predict
 Content-Type: application/json
@@ -198,7 +198,7 @@ Content-Type: application/json
 }
 ```
 
-**응답 예시:**
+**Response Example:**
 ```json
 {
   "top1ClassName": "tshirts",
@@ -206,44 +206,44 @@ Content-Type: application/json
 }
 ```
 
-#### 헬스 체크
+#### Health Check
 ```http
 GET /health
 ```
 
-### API 문서
-서버 실행 후 다음 URL에서 자동 생성된 API 문서를 확인할 수 있습니다:
+### API Documentation
+After running the server, you can view auto-generated API documentation at:
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 
-## 📁 프로젝트 구조
+## 📁 Project Structure
 
 ```
 reward-closet-ai-api-server/
 ├── src/
-│   ├── app.py                 # FastAPI 메인 애플리케이션
-│   ├── api/                   # API 라우터
-│   │   ├── models.py          # 모델 예측 라우터
-│   │   └── health_check.py    # 헬스 체크 라우터
-│   ├── service/               # 비즈니스 로직
-│   │   └── models.py          # 모델 추론 서비스
-│   ├── ai/                    # AI 모델 관련
-│   │   ├── session/           # 모델 세션
-│   │   │   └── clothes.py     # 의류 분류 모델
-│   │   └── torchscript/       # TorchScript 모델 파일
-│   ├── dto/                   # 데이터 전송 객체
-│   │   └── models.py          # API 요청/응답 모델
-│   └── exception_handler.py   # 예외 처리
-├── docker-compose.yml         # Docker Compose 설정
-├── Dockerfile                 # Docker 이미지 빌드 설정
-├── Dockerrun.aws.json         # Elastic Beanstalk Docker 설정
-├── nginx.conf                 # Nginx 프록시 설정
-├── requirements.txt           # Python 의존성
-├── start.sh                   # 배포 스크립트
-└── README.md                  # 프로젝트 문서
+│   ├── app.py                 # FastAPI main application
+│   ├── api/                   # API routes
+│   │   ├── models.py          # Model prediction router
+│   │   └── health_check.py    # Health check router
+│   ├── service/               # Business logic
+│   │   └── models.py          # Model inference service
+│   ├── ai/                    # AI model related
+│   │   ├── session/           # Model sessions
+│   │   │   └── clothes.py     # Clothing classification model
+│   │   └── torchscript/       # TorchScript model files
+│   ├── dto/                   # Data transfer objects
+│   │   └── models.py          # API request/response models
+│   └── exception_handler.py   # Exception handling
+├── docker-compose.yml         # Docker Compose configuration
+├── Dockerfile                 # Docker image build configuration
+├── Dockerrun.aws.json         # Elastic Beanstalk Docker configuration
+├── nginx.conf                 # Nginx proxy configuration
+├── requirements.txt           # Python dependencies
+├── start.sh                   # Deployment script
+└── README.md                  # Project documentation
 ```
 
-## 🔧 주요 의존성
+## 🔧 Key Dependencies
 
 ```
 fastapi==0.115.6
@@ -257,75 +257,75 @@ requests==2.32.3
 pydantic==2.10.3
 ```
 
-## 🚦 개발 가이드라인
+## 🚦 Development Guidelines
 
-### 코드 스타일
-- Python PEP 8 준수
-- Type hints 사용 권장
-- Pydantic 모델을 통한 데이터 검증
+### Code Style
+- Follow Python PEP 8
+- Use type hints when possible
+- Data validation through Pydantic models
 
-### 모델 업데이트
-1. 새로운 TorchScript 모델을 `src/ai/torchscript/` 디렉토리에 배치
-2. `src/ai/session/clothes.py`에서 모델 경로 및 레이블 업데이트
-3. 필요시 전처리 로직 수정
+### Model Updates
+1. Place new TorchScript models in the `src/ai/torchscript/` directory
+2. Update model path and labels in `src/ai/session/clothes.py`
+3. Modify preprocessing logic if necessary
 
-## 📊 성능 최적화
+## 📊 Performance Optimization
 
-- **TorchScript**: 모델 추론 속도 최적화
-- **CPU 전용**: GPU 의존성 제거로 범용성 향상
-- **이미지 전처리**: OpenCV와 PIL을 통한 효율적인 이미지 처리
-- **NMS**: Non-Maximum Suppression을 통한 중복 검출 제거
+- **TorchScript**: Optimized model inference speed
+- **CPU Only**: Improved versatility by removing GPU dependencies
+- **Image Preprocessing**: Efficient image processing with OpenCV and PIL
+- **NMS**: Non-Maximum Suppression for duplicate detection removal
 
-## 🐛 문제 해결
+## 🐛 Troubleshooting
 
-### 일반적인 오류
+### Common Errors
 
-1. **모델 파일 없음**
-   - TorchScript 모델 파일이 올바른 경로에 있는지 확인
-   - 모델 파일의 권한 확인
+1. **Model File Missing**
+   - Check if TorchScript model file is in the correct path
+   - Verify model file permissions
 
-2. **이미지 로드 실패**
-   - 이미지 URL의 접근 가능성 확인
-   - 지원되는 이미지 형식인지 확인 (JPEG, PNG 등)
+2. **Image Load Failure**
+   - Check image URL accessibility
+   - Verify supported image formats (JPEG, PNG, etc.)
 
-3. **메모리 부족**
-   - 이미지 크기가 너무 큰 경우 리사이징 필요
-   - 배치 처리 시 배치 크기 조정
+3. **Memory Issues**
+   - Resize images if they are too large
+   - Adjust batch size for batch processing
 
-### Elastic Beanstalk 관련 문제
+### Elastic Beanstalk Related Issues
 
-1. **배포 실패**
-   - Docker Hub에 이미지가 올바르게 푸시되었는지 확인
-   - `Dockerrun.aws.json` 파일의 이미지 이름 확인
-   - AWS 권한 설정 확인
+1. **Deployment Failure**
+   - Verify image is correctly pushed to Docker Hub
+   - Check image name in `Dockerrun.aws.json` file
+   - Verify AWS permissions configuration
 
-2. **애플리케이션 시작 실패**
-   - `eb logs`로 상세 로그 확인
-   - 환경 변수 설정 확인
-   - 포트 설정 확인 (기본값: 8000)
+2. **Application Start Failure**
+   - Check detailed logs with `eb logs`
+   - Verify environment variable configuration
+   - Check port configuration (default: 8000)
 
-3. **성능 문제**
-   - EC2 인스턴스 타입 확인 (CPU 집약적 작업)
-   - 로드 밸런서 설정 확인
-   - Auto Scaling 설정 검토
+3. **Performance Issues**
+   - Check EC2 instance type (CPU intensive tasks)
+   - Review load balancer configuration
+   - Review Auto Scaling settings
 
-### Docker 관련 문제
+### Docker Related Issues
 
-1. **컨테이너 빌드 실패**
-   - Docker 이미지 크기 확인 (PyTorch로 인해 클 수 있음)
-   - 의존성 설치 과정에서 오류 확인
-   - 네트워크 연결 확인
+1. **Container Build Failure**
+   - Check Docker image size (can be large due to PyTorch)
+   - Check for errors during dependency installation
+   - Verify network connectivity
 
-2. **컨테이너 실행 오류**
-   - 포트 충돌 확인
-   - 볼륨 마운트 권한 확인
-   - 환경 변수 설정 확인
+2. **Container Runtime Errors**
+   - Check for port conflicts
+   - Verify volume mount permissions
+   - Check environment variable configuration
 
-## 📄 라이선스
+## 📄 License
 
 MIT License
 
-## 🤝 기여하기
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -333,6 +333,6 @@ MIT License
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📞 지원
+## 📞 Support
 
-문제가 발생하거나 질문이 있으시면 Issues 탭에서 문의해 주세요.
+If you encounter any issues or have questions, please reach out through the Issues tab. 
