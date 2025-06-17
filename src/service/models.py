@@ -31,7 +31,7 @@ def cls_model_postprocess(output, labels):
 
 
 def detection_model_postprocess(output, input_shape, img_shape, labels):
-    confidence_thres = 0.5
+    confidence_thres = 0.25
     iou_thres = 0.5
 
     # Transpose and squeeze the output to match the expected shape
