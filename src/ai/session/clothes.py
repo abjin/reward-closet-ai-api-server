@@ -20,8 +20,6 @@ labels = [
   'blouse',
   'tshirts',
   'skirt',
-  'ripped',
-  'pollution',
   'tearing',
-  'frayed',
+  'pollution',
 ]
